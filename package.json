@@ -2,13 +2,14 @@
   "name": "RaumgleiterEngine",
   "version": "0.0.1",
   "description": "Raumgleiter RSS feed crawler",
-  "main": "parser.js",
+  "main": "main.js",
   "scripts": {
     "start": "node parser.js",
     "test": "mocha test"
   },
   "dependencies": {
-    "xml2js": ">= 0.4.16"
+    "xml2js": ">= 0.4.16",
+    "mongodb": ">= 2.1.20"
   },
   "devDependencies": {
     "mocha": ">= 2.5.3",

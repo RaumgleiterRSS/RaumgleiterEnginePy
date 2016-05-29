@@ -1,65 +1,52 @@
+var parseString = require('xml2js').parseString;
+var http = require('http');
+var https = require('https');
+
 var Parser = {
   parseFeed: function(url, callback) {
-    this.readUrl(url, function(data){
-      var parseString = require('xml2js').parseString;
-
-      parseString(data, function (err, result) {
-        callback(result);
-      });
+    this.readUrl(url, function(err, res){
+      if (!err) {
+        parseString(res, callback);
+      } else {
+        callback(err);
+      }
     });
   },
 
   readUrl: function readUrl(url, callback) {
-    var http = null;
+    var self = this;
+    var handle = null;
 
     if (url.indexOf('https:') === 0) {
-      http = require('https');
+      handle = https;
     } else {
-      http = require('http');
+      handle = http;
     }
 
-    var handleResponse = function(response, callback) {
-      if (!!response.headers && !response.headers.location) {
-        fetchContent(response, callback);
+    var request = handle.get(url, function (response) {
+      if (response.statusCode === 200) {
+        var str = '';
+
+        response.on('data', function (chunk) {
+          str += chunk;
+        });
+
+        response.on('end', function () {
+          callback(null, str);
+        });
       } else {
-        if (!!response.headers.location) {
+        if ((response.statusCode === 301 || response.statusCode === 302) &&
+            (!!response.headers && !!response.headers.location)) {
           var url = response.headers.location;
-
-          if (url.indexOf('https:') === 0) {
-            http = require('https');
-          } else {
-            http = require('http');
-          }
-
-          var request = http.get(url, function (response) {
-            handleResponse(response, callback);
-          });
-
-          request.end();
+          self.readUrl(url, callback);
         } else {
-          throw new Error('Unknown response');
+          callback(new Error('Invalid URL'));
         }
       }
-    };
-
-    var fetchContent = function(response, callback) {
-      var str = '';
-
-      response.on('data', function (chunk) {
-        str += chunk;
-      });
-
-      response.on('end', function () {
-        callback(str);
-      });
-    };
-
-    var request = http.get(url, function (response) {
-      handleResponse(response, callback);
+    }).on('error', function(e) {
+      callback(e);
     });
-
-    request.end();
   }
 };
 
-exports.Parser = Parser;
+module.exports = Parser;

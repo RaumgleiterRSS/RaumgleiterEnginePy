@@ -1,5 +1,37 @@
-Parser = require('../parser.js').Parser;
+Collection = require('../collection.js');
+Parser = require('../parser.js');
+Aggregator = require('../aggregator');
+
 var assert = require('chai').assert;
+
+describe('Collection', function() {
+  describe('#insertOne()', function () {
+    it('should insert a document', function () {
+      var TestCollection = new Collection('TestCollection');
+      TestCollection.insertOne({test: true}, function(res){
+        assert.deepPropertyVal(res, 'result.ok', 1);
+      });
+    });
+  });
+
+  describe('#findOne()', function () {
+    it('should find the previously inserted document', function () {
+      var TestCollection = new Collection('TestCollection');
+      TestCollection.findOne({test: true}, function(res){
+        assert.deepPropertyVal(res, 'test', true);
+      });
+    });
+  });
+
+  describe('#deleteOne()', function () {
+    it('should delete the previously inserted document', function () {
+      var TestCollection = new Collection('TestCollection');
+      TestCollection.deleteOne({test: true}, function(res){
+        assert.deepPropertyVal(res, 'result.ok', 1);
+      });
+    });
+  });
+});
 
 describe('Parser', function() {
   describe('#readUrl()', function () {
@@ -20,6 +52,21 @@ describe('Parser', function() {
         assert.property(result, 'rss');
         assert.deepProperty(result, 'rss.channel');
       });
+    });
+  });
+});
+
+describe('Aggregator', function() {
+  describe('#addFeed()', function () {
+    it('should throw Error when url is not a RSS feed', function () {
+      assert.throws(function() {
+        try {
+          Aggregator.addFeed('http://github.com/RaumgleiterRSS/RaumgleiterEngine');
+        } catch(e) {
+          console.log(e);
+          throw e;
+        }
+      }, Error, 'Invalid feed URL');
     });
   });
 });
