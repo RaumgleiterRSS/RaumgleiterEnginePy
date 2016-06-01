@@ -34,11 +34,7 @@ class Collection{
 
   _finish(err, res, db, callback) {
     db.close();
-    if (!err) {
-      callback(res);
-    } else {
-      throw new Error(err);
-    }
+    callback(err, res);
   }
 
   insertOne(document, callback) {
@@ -80,6 +76,19 @@ class Collection{
 
     self._connect(function(db, collection) {
       collection.deleteOne(query, function(err, result){
+        self._finish(err, result, db, callback);
+      });
+    });
+  }
+
+
+
+  updateOne(query, update, callback) {
+    var self = this;
+    callback = callback || function(){};
+
+    self._connect(function(db, collection) {
+      collection.updateOne(query, update, function(err, result){
         self._finish(err, result, db, callback);
       });
     });

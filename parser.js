@@ -4,12 +4,20 @@ var https = require('https');
 
 class Parser {
   static parseFeed(url, callback) {
+    var self = this;
+
     this.readUrl(url, function(err, res){
-      if (!err) {
-        parseString(res, {async: false}, callback);
-      } else {
-        callback(err);
-      }
+      if (err) callback(err);
+
+      parseString(res, {async: false}, function(err, res){
+        if (err) callback(err);
+
+        // ATOM-Format
+        if (res.feed) {
+          self.parseAtom(res, callback);
+        }
+        callback(new Error('Not implemented yet!'));
+      });
     });
   }
 
@@ -46,6 +54,60 @@ class Parser {
     }).on('error', function(e) {
       callback(e);
     });
+  }
+
+  static parseAtom(res, callback) {
+    var feed = {};
+
+    if (res.feed.title) {
+      feed.title = res.feed.title[0];
+    }
+
+    if (res.feed.link) {
+      if (res.feed.link[0] && res.feed.link[0].$.href) {
+        feed.link = res.feed.link[0].$.href;
+      }
+      if (res.feed.link[1] && res.feed.link[1].$.href) {
+        feed.feedUrl = res.feed.link[1].$.href;
+      }
+    }
+
+    var entries = res.feed.entry || [];
+
+    feed.entries = [];
+
+    entries.forEach(function(item){
+      var entry = {};
+
+      if (item.id) {
+        entry.id = item.id[0];
+      }
+
+      if (item.link) {
+        entry.link = item.link[0].$.href;
+      }
+
+      if (item.title){
+        entry.title = item.title[0];
+      }
+
+      if (item.updated){
+        entry.updated = item.updated[0];
+      }
+
+      if (item.content) {
+        if (typeof item.content[0]._ === 'string') {
+          entry.content = item.content[0]._;
+        } else {
+          // TODO: implement for other feed types
+          entry.content = item.content;
+        }
+      }
+
+      feed.entries.push(entry);
+    });
+
+    callback(null, feed);
   }
 }
 
