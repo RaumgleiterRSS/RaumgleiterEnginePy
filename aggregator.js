@@ -3,24 +3,28 @@ var Parser = require('./parser.js');
 
 var Feeds = new Collection('Feeds');
 
-var Aggregator = {
-  addFeed: function(url) {
+class Aggregator {
+  static addFeed(url, callback) {
+    callback = callback || function(){};
+
     Feeds.findOne({url: url}, function(result){
       if (!result) {
         Parser.parseFeed(url, function(err, json){
-          if (!!err) {
-            throw new Error('Invalid feed URL');
-          }
+          if (!err && !!json) {
+            var feed = {
+              title: json.feed.title[0],
+              url: url
+            };
+            Feeds.insertOne(feed);
 
-          var feed = {
-            title: json.feed.title[0],
-            url: url
-          };
-          Feeds.insertOne(feed);
+            callback(null, feed);
+          } else {
+            callback(new Error('Invalid feed URL'));
+          }
         });
       }
     });
   }
-};
+}
 
 module.exports = Aggregator;

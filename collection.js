@@ -1,25 +1,26 @@
 var MongoClient = require('mongodb').MongoClient;
 var config = require('./config.js');
 
-function Collection(collectionName){
-  this.collectionName = collectionName;
+class Collection{
+  constructor(collectionName){
+    var self = this;
 
-  var self = this;
-  MongoClient.connect(config.mongoURL, function(err, db) {
-    var collection = db.collection(self.collectionName);
+    this.collectionName = collectionName;
 
-    if (!collection) {
-      db.createCollection(self.collectionName, function(collection){
+    MongoClient.connect(config.mongoURL, function(err, db) {
+      var collection = db.collection(self.collectionName);
+
+      if (!collection) {
+        db.createCollection(self.collectionName, function(collection){
+          db.close();
+        });
+      } else {
         db.close();
-      });
-    } else {
-      db.close();
-    }
-  });
-}
+      }
+    });
+  }
 
-Collection.prototype = {
-  _connect: function(callback){
+  _connect(callback) {
     var self = this;
     MongoClient.connect(config.mongoURL, function(err, db) {
       if (!err) {
@@ -29,18 +30,18 @@ Collection.prototype = {
         throw err;
       }
     });
-  },
+  }
 
-  _finish: function(err, res, db, callback) {
+  _finish(err, res, db, callback) {
     db.close();
     if (!err) {
       callback(res);
     } else {
       throw new Error(err);
     }
-  },
+  }
 
-  insertOne: function(document, callback){
+  insertOne(document, callback) {
     var self = this;
     callback = callback || function(){};
 
@@ -49,9 +50,9 @@ Collection.prototype = {
         self._finish(err, result, db, callback);
       });
     });
-  },
+  }
 
-  findOne: function(query, callback){
+  findOne(query, callback) {
     var self = this;
     callback = callback || function(){};
 
@@ -60,9 +61,9 @@ Collection.prototype = {
         self._finish(err, result, db, callback);
       });
     });
-  },
+  }
 
-  find: function(query, callback){
+  find(query, callback) {
     var self = this;
     callback = callback || function(){};
 
@@ -71,11 +72,9 @@ Collection.prototype = {
         self._finish(err, result, db, callback);
       });
     });
-  },
+  }
 
-
-
-  deleteOne: function(query, callback){
+  deleteOne(query, callback) {
     var self = this;
     callback = callback || function(){};
 
@@ -84,7 +83,7 @@ Collection.prototype = {
         self._finish(err, result, db, callback);
       });
     });
-  },
-};
+  }
+}
 
 module.exports = Collection;

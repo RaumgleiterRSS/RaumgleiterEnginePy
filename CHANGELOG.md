@@ -11,6 +11,7 @@ This project adheres to [RaumgleiterEngine](https://github.com/RaumgleiterRSS/Ra
 
 ### Changed
 - Rewrite Parser
+- Use ECMA6 classes
 
 ## [0.0.1] - 2016-05-28
 ### Added

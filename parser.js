@@ -2,18 +2,18 @@ var parseString = require('xml2js').parseString;
 var http = require('http');
 var https = require('https');
 
-var Parser = {
-  parseFeed: function(url, callback) {
+class Parser {
+  static parseFeed(url, callback) {
     this.readUrl(url, function(err, res){
       if (!err) {
-        parseString(res, callback);
+        parseString(res, {async: false}, callback);
       } else {
         callback(err);
       }
     });
-  },
+  }
 
-  readUrl: function readUrl(url, callback) {
+  static readUrl(url, callback) {
     var self = this;
     var handle = null;
 
@@ -47,6 +47,6 @@ var Parser = {
       callback(e);
     });
   }
-};
+}
 
 module.exports = Parser;
