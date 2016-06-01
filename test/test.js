@@ -1,6 +1,6 @@
 Collection = require('../collection.js');
 Parser = require('../parser.js');
-Aggregator = require('../aggregator');
+Aggregator = require('../aggregator.js');
 
 var assert = require('chai').assert;
 
@@ -58,15 +58,10 @@ describe('Parser', function() {
 
 describe('Aggregator', function() {
   describe('#addFeed()', function () {
-    it('should throw Error when url is not a RSS feed', function () {
-      assert.throws(function() {
-        try {
-          Aggregator.addFeed('http://github.com/RaumgleiterRSS/RaumgleiterEngine');
-        } catch(e) {
-          console.log(e);
-          throw e;
-        }
-      }, Error, 'Invalid feed URL');
+    it('should return an Error when url is not a RSS feed', function () {
+      Aggregator.addFeed('http://github.com/RaumgleiterRSS/RaumgleiterEngine', function(err, res){
+        assert.isNotNull(err);
+      });
     });
   });
 });
