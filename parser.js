@@ -15,6 +15,7 @@ class Parser {
         // ATOM-Format
         if (res.feed) {
           self.parseAtom(res, callback);
+          return;
         }
         callback(new Error('Not implemented yet!'));
       });

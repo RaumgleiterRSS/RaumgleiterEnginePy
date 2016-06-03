@@ -8,6 +8,7 @@ This project adheres to [RaumgleiterEngine](https://github.com/RaumgleiterRSS/Ra
 - Collection handling
 - Basic Aggregator
 - More tests
+- CLI script
 
 ### Changed
 - Rewrite Parser

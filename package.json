@@ -4,8 +4,10 @@
   "description": "Raumgleiter RSS feed crawler",
   "main": "main.js",
   "scripts": {
-    "start": "node parser.js",
     "test": "mocha test"
+  },
+  "bin": {
+    "raumgleiter": "main.js"
   },
   "dependencies": {
     "xml2js": ">= 0.4.16",

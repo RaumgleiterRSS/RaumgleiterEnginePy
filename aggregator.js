@@ -66,6 +66,15 @@ class Aggregator {
       });
     });
   }
+
+  static getFeeds(filters, callback) {
+    if (!callback) {
+      callback = filters;
+      filters = {};
+    }
+
+    Feeds.find(filters, callback);
+  }
 }
 
 module.exports = Aggregator;
